@@ -97,7 +97,7 @@ static int const RCTVideoUnset = -1;
 {
   if ((self = [super init])) {
     _eventDispatcher = eventDispatcher;
-	  _automaticallyWaitsToMinimizeStalling = YES;
+    _automaticallyWaitsToMinimizeStalling = YES;
     _playbackRateObserverRegistered = NO;
     _isExternalPlaybackActiveObserverRegistered = NO;
     _playbackStalled = NO;
@@ -884,14 +884,24 @@ static int const RCTVideoUnset = -1;
   }
 
   _pictureInPicture = pictureInPicture;
-  if (_pipController && _pictureInPicture && ![_pipController isPictureInPictureActive]) {
+
+  if (pictureInPicture) {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_playerViewController.player];
+    _playerLayer.frame = self.bounds;
+    _playerLayer.needsDisplayOnBoundsChange = YES;
+    [self.layer addSublayer:_playerLayer];
+    self.layer.needsDisplayOnBoundsChange = YES;
+    _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:_playerLayer];
     dispatch_async(dispatch_get_main_queue(), ^{
       [_pipController startPictureInPicture];
     });
-  } else if (_pipController && !_pictureInPicture && [_pipController isPictureInPictureActive]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [_pipController stopPictureInPicture];
-    });
+    [_playerViewController.view removeFromSuperview];
+  } else {
+    [_playerLayer removeFromSuperlayer];
+    _playerLayer = nil;
+    _pipController = nil;
+    [self addSubview:_playerViewController.view];
   }
   #endif
 }
@@ -1055,8 +1065,8 @@ static int const RCTVideoUnset = -1;
 
 - (void)setAutomaticallyWaitsToMinimizeStalling:(BOOL)waits
 {
-	_automaticallyWaitsToMinimizeStalling = waits;
-	_player.automaticallyWaitsToMinimizeStalling = waits;
+  _automaticallyWaitsToMinimizeStalling = waits;
+  _player.automaticallyWaitsToMinimizeStalling = waits;
 }
 
 
