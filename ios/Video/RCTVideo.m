@@ -893,6 +893,7 @@ static int const RCTVideoUnset = -1;
     [self.layer addSublayer:_playerLayer];
     self.layer.needsDisplayOnBoundsChange = YES;
     _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:_playerLayer];
+    _pipController.delegate = self;
     dispatch_async(dispatch_get_main_queue(), ^{
       [_pipController startPictureInPicture];
     });
@@ -2016,7 +2017,7 @@ didCancelLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest {
 }
 
 - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL))completionHandler {
-  NSAssert(_restoreUserInterfaceForPIPStopCompletionHandler == NULL, @"restoreUserInterfaceForPIPStopCompletionHandler was not called after picture in picture was exited.");
+  // NSAssert(_restoreUserInterfaceForPIPStopCompletionHandler == NULL, @"restoreUserInterfaceForPIPStopCompletionHandler was not called after picture in picture was exited.");
   if (self.onRestoreUserInterfaceForPictureInPictureStop) {
     self.onRestoreUserInterfaceForPictureInPictureStop(@{});
   }
