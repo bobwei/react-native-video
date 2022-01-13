@@ -110,7 +110,7 @@ static int const RCTVideoUnset = -1;
     _pendingSeekTime = 0.0f;
     _lastSeekTime = 0.0f;
     _progressUpdateInterval = 250;
-    _controls = NO;
+    _controls = YES;
     _playerBufferEmpty = YES;
     _playInBackground = false;
     _preventsDisplaySleepDuringVideoPlayback = true;
@@ -843,7 +843,7 @@ static int const RCTVideoUnset = -1;
 
 - (void)setResizeMode:(NSString*)mode
 {
-  if( _controls )
+  if( _controls || YES )
   {
     _playerViewController.videoGravity = mode;
   }
@@ -1370,7 +1370,7 @@ static int const RCTVideoUnset = -1;
       UIViewController *rootViewController = [[UIApplication sharedApplication] keyWindow].rootViewController;
       [_playerViewController removeFromParentViewController];
       [rootViewController presentViewController:_playerViewController animated:false completion:^{
-        _playerViewController.showsPlaybackControls = YES;
+        _playerViewController.showsPlaybackControls = NO;
         _fullscreenPlayerPresented = fullscreen;
         _playerViewController.autorotate = _fullscreenAutorotate;
         if(self.onVideoFullscreenPlayerDidPresent) {
@@ -1413,7 +1413,7 @@ static int const RCTVideoUnset = -1;
     // resize mode must be set before subview is added
     [self setResizeMode:_resizeMode];
 
-    if (_controls) {
+    if (_controls || YES) {
       UIViewController *viewController = [self reactViewController];
       [viewController addChildViewController:_playerViewController];
       [self addSubview:_playerViewController.view];
@@ -1452,7 +1452,7 @@ static int const RCTVideoUnset = -1;
   if( _controls != controls || (!_playerLayer && !_playerViewController) )
   {
     _controls = controls;
-    if( _controls )
+    if( _controls || YES)
     {
       [self removePlayerLayer];
       [self usePlayerViewController];
@@ -1463,6 +1463,9 @@ static int const RCTVideoUnset = -1;
       _playerViewController = nil;
       [self usePlayerLayer];
     }
+  }
+  if (_playerViewController) {
+    _playerViewController.showsPlaybackControls = controls;
   }
 }
 
@@ -1556,12 +1559,12 @@ static int const RCTVideoUnset = -1;
 {
   // We are early in the game and somebody wants to set a subview.
   // That can only be in the context of playerViewController.
-  if( !_controls && !_playerLayer && !_playerViewController )
-  {
-    [self setControls:true];
-  }
+ if( !_controls && !_playerLayer && !_playerViewController )
+ {
+  //  [self setControls:true];
+ }
 
-  if( _controls )
+  if( _controls || YES)
   {
     view.frame = self.bounds;
     [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
@@ -1575,7 +1578,7 @@ static int const RCTVideoUnset = -1;
 
 - (void)removeReactSubview:(UIView *)subview
 {
-  if( _controls )
+  if( _controls || YES )
   {
     [subview removeFromSuperview];
   }
@@ -1589,7 +1592,7 @@ static int const RCTVideoUnset = -1;
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  if( _controls )
+  if( _controls || YES )
   {
     _playerViewController.view.frame = self.bounds;
 
