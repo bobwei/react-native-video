@@ -161,6 +161,8 @@ static int const RCTVideoUnset = -1;
 
   viewController.view.frame = self.bounds;
   viewController.player = player;
+  AVMediaSelectionGroup *subtitleSelectionGroup = [_playerItem.asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
+  [_playerItem selectMediaOption:NULL inMediaSelectionGroup:subtitleSelectionGroup];
   return viewController;
 }
 
